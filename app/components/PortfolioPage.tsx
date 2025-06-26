@@ -120,7 +120,7 @@ export function PortfolioPage({ slug }: Props) {
           <Card className="p-8">
             <div>TODO: Chat</div>
             <div>
-              Visitor: Tell me about Andy&apos;s biggest achievements, side projects, and work
+              Visitor: Tell me about Andy&apos;s coolest achievements, side projects, and work
               experience.
             </div>
             <div>ChatGPT: ...</div>
