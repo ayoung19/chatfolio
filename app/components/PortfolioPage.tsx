@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { AppSchema } from "@/instant.schema";
 import { db } from "@/lib/db";
+import { cn } from "@/lib/utils";
 import { InstaQLEntity } from "@instantdb/react";
 import { Download, Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
@@ -96,6 +97,9 @@ export function PortfolioPage({ slug }: Props) {
     return null;
   }
 
+  const isMyPortfolio =
+    portfoliosQuery.data.portfolios[0].id === myPortfoliosQuery.data?.portfolios[0].id;
+
   return (
     <div className="container mx-auto">
       <NavigationMenu className="my-4">
@@ -158,7 +162,7 @@ export function PortfolioPage({ slug }: Props) {
           <Card>
             <div className="flex items-center justify-between px-6 py-4">
               <CardTitle>Context</CardTitle>
-              <CardAction>
+              <CardAction className={cn(!isMyPortfolio && "invisible")}>
                 <Dialog
                   open={modalId === "create-context"}
                   onOpenChange={(open) => setModalId(open ? "create-context" : undefined)}
@@ -204,30 +208,34 @@ export function PortfolioPage({ slug }: Props) {
                         >
                           <Download size="1rem" />
                         </Button>
-                        <Dialog
-                          open={modalId === "edit-context"}
-                          onOpenChange={(open) => setModalId(open ? "edit-context" : undefined)}
-                        >
-                          <DialogTrigger asChild>
-                            <Button size="icon" variant="ghost">
-                              <Pencil size="1rem" />
+                        {isMyPortfolio && (
+                          <>
+                            <Dialog
+                              open={modalId === "edit-context"}
+                              onOpenChange={(open) => setModalId(open ? "edit-context" : undefined)}
+                            >
+                              <DialogTrigger asChild>
+                                <Button size="icon" variant="ghost">
+                                  <Pencil size="1rem" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <UpdateContextForm
+                                  context={context}
+                                  slug={slug}
+                                  onClose={() => setModalId(undefined)}
+                                />
+                              </DialogContent>
+                            </Dialog>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => db.transact(db.tx.contexts[context.id].delete())}
+                            >
+                              <Trash2 size="1rem" />
                             </Button>
-                          </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
-                            <UpdateContextForm
-                              context={context}
-                              slug={slug}
-                              onClose={() => setModalId(undefined)}
-                            />
-                          </DialogContent>
-                        </Dialog>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => db.transact(db.tx.contexts[context.id].delete())}
-                        >
-                          <Trash2 size="1rem" />
-                        </Button>
+                          </>
+                        )}
                       </CardAction>
                     </div>
                   </Card>
