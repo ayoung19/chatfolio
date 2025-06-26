@@ -56,12 +56,7 @@ export function PortfolioPage({ slug }: Props) {
     return null;
   }
 
-  if (
-    portfoliosQuery.isLoading ||
-    portfoliosQuery.error ||
-    myPortfoliosQuery.isLoading ||
-    myPortfoliosQuery.error
-  ) {
+  if (portfoliosQuery.isLoading || portfoliosQuery.error) {
     return null;
   }
 
