@@ -54,7 +54,7 @@ export function CreatePortfolioForm({ onClose }: Props) {
   const onSubmit: SubmitHandler<FormValues> = async ({ slug, name, about }) => {
     try {
       await db.transact(
-        db.tx.portfolios[id()].update({ slug, name, about }).link({ $user: auth.user?.id }),
+        db.tx.portfolios[id()]!.update({ slug, name, about }).link({ $user: auth.user?.id }),
       );
     } catch (e) {
       console.log(e);
