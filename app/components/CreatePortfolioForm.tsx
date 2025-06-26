@@ -111,6 +111,7 @@ export function CreatePortfolioForm({ onClose }: Props) {
               {...field}
               id="about"
               placeholder="Senior Software Engineer at Meta"
+              rows={4}
               required
             />
             {errors.about?.message && (

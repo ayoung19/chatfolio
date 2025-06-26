@@ -16,6 +16,10 @@ const _schema = i.schema({
       name: i.string(),
       about: i.string(),
     }),
+    contexts: i.entity({
+      name: i.string(),
+      value: i.string(),
+    }),
   },
   links: {
     profileUser: {
@@ -26,6 +30,10 @@ const _schema = i.schema({
         onDelete: "cascade",
       },
       reverse: { on: "$users", has: "one", label: "portfolio" },
+    },
+    contextsPortfolio: {
+      forward: { on: "contexts", has: "one", label: "portfolio", onDelete: "cascade" },
+      reverse: { on: "portfolios", has: "many", label: "contexts" },
     },
   },
 });

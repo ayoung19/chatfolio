@@ -13,6 +13,15 @@ const rules = {
     },
     bind: ["isOwner", "auth.id in data.ref('$user.id')"],
   },
+  contexts: {
+    allow: {
+      view: "true",
+      create: "isOwner",
+      update: "isOwner",
+      delete: "isOwner",
+    },
+    bind: ["isOwner", "auth.id in data.ref('portfolio.$user.id')"],
+  },
 } satisfies InstantRules;
 
 export default rules;
