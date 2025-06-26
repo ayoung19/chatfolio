@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { db } from "@/lib/db";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { id } from "@instantdb/react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -23,8 +23,6 @@ interface Props {
 export function CreatePortfolioForm({ onClose }: Props) {
   const auth = db.useAuth();
 
-  const [step, setStep] = useState<0 | 1>(0);
-
   const myPortfoliosQuery = db.useQuery(
     auth.user
       ? {
@@ -41,10 +39,6 @@ export function CreatePortfolioForm({ onClose }: Props) {
 
   const {
     control,
-    setError,
-    setValue,
-    watch,
-    reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -84,60 +78,46 @@ export function CreatePortfolioForm({ onClose }: Props) {
       <Controller
         name="slug"
         control={control}
-        render={({ field }) =>
-          step === 0 ? (
-            <div className="my-4">
-              <Label htmlFor="slug">Slug</Label>
-              <Input {...field} id="slug" placeholder="john-doe" required autoFocus />
-              {errors.slug?.message ? (
-                <p className="text-sm text-red-400">{errors.slug.message}</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">TODO: Description</p>
-              )}
-            </div>
-          ) : (
-            <></>
-          )
-        }
+        render={({ field }) => (
+          <div className="my-4">
+            <Label htmlFor="slug">Slug</Label>
+            <Input {...field} id="slug" placeholder="john-doe" required autoFocus />
+            {errors.slug?.message ? (
+              <p className="text-sm text-red-400">{errors.slug.message}</p>
+            ) : (
+              <p className="text-sm text-muted-foreground">TODO: Description</p>
+            )}
+          </div>
+        )}
       />
       <Controller
         name="name"
         control={control}
-        render={({ field }) =>
-          step === 0 ? (
-            <div className="my-4">
-              <Label htmlFor="name">Name</Label>
-              <Input {...field} id="name" placeholder="John Doe" required />
-              {errors.name?.message && (
-                <p className="text-sm text-red-400">{errors.name.message}</p>
-              )}
-            </div>
-          ) : (
-            <></>
-          )
-        }
+        render={({ field }) => (
+          <div className="my-4">
+            <Label htmlFor="name">Name</Label>
+            <Input {...field} id="name" placeholder="John Doe" required />
+            {errors.name?.message && <p className="text-sm text-red-400">{errors.name.message}</p>}
+          </div>
+        )}
       />
       <Controller
         name="about"
         control={control}
-        render={({ field }) =>
-          step === 0 ? (
-            <div className="my-4">
-              <Label htmlFor="about">About</Label>
-              <Textarea
-                {...field}
-                id="about"
-                placeholder="Senior Software Engineer at Meta"
-                required
-              />
-              {errors.about?.message && (
-                <p className="text-sm text-red-400">{errors.about.message}</p>
-              )}
-            </div>
-          ) : (
-            <></>
-          )
-        }
+        render={({ field }) => (
+          <div className="my-4">
+            <Label htmlFor="about">About</Label>
+            <Textarea
+              {...field}
+              id="about"
+              placeholder="Senior Software Engineer at Meta"
+              required
+            />
+            {errors.about?.message && (
+              <p className="text-sm text-red-400">{errors.about.message}</p>
+            )}
+          </div>
+        )}
       />
       {/* TODO: Loading state. */}
       <Button type="submit" size="sm" disabled={isSubmitting} className="w-full">
