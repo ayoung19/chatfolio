@@ -185,8 +185,10 @@ export function PortfolioPage({ slug }: Props) {
                       <CardTitle>{context.name}</CardTitle>
                       <CardAction>
                         <Dialog
-                          open={modalId === "view-context"}
-                          onOpenChange={(open) => setModalId(open ? "view-context" : undefined)}
+                          open={modalId === `view-context-${context.id}`}
+                          onOpenChange={(open) =>
+                            setModalId(open ? `view-context-${context.id}` : undefined)
+                          }
                         >
                           <DialogTrigger asChild>
                             <Button size="icon" variant="ghost">
@@ -212,8 +214,10 @@ export function PortfolioPage({ slug }: Props) {
                         {isMyPortfolio && (
                           <>
                             <Dialog
-                              open={modalId === "edit-context"}
-                              onOpenChange={(open) => setModalId(open ? "edit-context" : undefined)}
+                              open={modalId === `edit-context-${context.id}`}
+                              onOpenChange={(open) =>
+                                setModalId(open ? `edit-context-${context.id}` : undefined)
+                              }
                             >
                               <DialogTrigger asChild>
                                 <Button size="icon" variant="ghost">
