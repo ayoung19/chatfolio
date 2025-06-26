@@ -20,7 +20,7 @@ export function Chat({ portfolio, contexts }: Props) {
 
   useEffect(() => {
     const visitorPrompt = `
-Please summarize the ${portfolio.name}'s background, skills, and key accomplishments based on the provided context.
+Please concisely summarize ${portfolio.name}'s background, skills, and key accomplishments based on the provided context.
 `.trim();
 
     append({
