@@ -27,19 +27,15 @@ export function PortfolioPage({ slug }: Props) {
 
   const { user, isLoading, error } = db.useAuth();
 
-  const portfoliosQuery = db.useQuery(
-    user
-      ? {
-          portfolios: {
-            $: {
-              where: {
-                slug,
-              },
-            },
-          },
-        }
-      : null,
-  );
+  const portfoliosQuery = db.useQuery({
+    portfolios: {
+      $: {
+        where: {
+          slug,
+        },
+      },
+    },
+  });
 
   const myPortfoliosQuery = db.useQuery(
     user
