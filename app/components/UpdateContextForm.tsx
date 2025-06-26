@@ -36,9 +36,9 @@ export function UpdateContextForm({ context, slug, disabled, onClose }: Props) {
   const onSubmit: SubmitHandler<FormValues> = async ({ name, value }) => {
     try {
       await db.transact(
-        db.tx.contexts[context?.id || id()]
-          .update({ name, value })
-          .link({ portfolio: lookup("slug", slug) }),
+        db.tx.contexts[context?.id || id()]!.update({ name, value }).link({
+          portfolio: lookup("slug", slug),
+        }),
       );
     } catch (e) {
       console.log(e);
