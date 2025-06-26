@@ -11,9 +11,14 @@
   },
   "dependencies": {
     "@instantdb/react": "^0.20.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.523.0",
     "next": "14.2.30",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "tailwind-merge": "^3.3.1",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
     "@ianvs/prettier-plugin-sort-imports": "^4.4.2",
@@ -24,6 +29,7 @@
     "eslint-config-next": "14.2.30",
     "postcss": "^8",
     "prettier": "^3.6.1",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
