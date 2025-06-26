@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardAction, CardContent, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   NavigationMenu,
@@ -17,6 +17,7 @@ import { InstaQLEntity } from "@instantdb/react";
 import { Download, Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Chat } from "./Chat";
 import { CreatePortfolioForm } from "./CreatePortfolioForm";
 import { SignInForm } from "./SignInForm";
 import { UpdateContextForm } from "./UpdateContextForm";
@@ -65,6 +66,24 @@ export function PortfolioPage({ slug }: Props) {
       : null,
   );
 
+  // TODO: Better handling.
+  if (isLoading || error) {
+    return null;
+  }
+
+  if (portfoliosQuery.isLoading || portfoliosQuery.error) {
+    return null;
+  }
+
+  const portfolio = portfoliosQuery.data.portfolios[0];
+  const myPortfolio = myPortfoliosQuery.data?.portfolios[0];
+
+  if (portfolio === undefined) {
+    return null;
+  }
+
+  const isMyPortfolio = portfolio.id === myPortfolio?.id;
+
   const downloadContext = async (context: InstaQLEntity<AppSchema, "contexts">) => {
     const mimeType = "application/text";
     const blob = new Blob([context.value], { type: mimeType });
@@ -83,22 +102,6 @@ export function PortfolioPage({ slug }: Props) {
     link.dispatchEvent(event);
     link.remove();
   };
-
-  // TODO: Better handling.
-  if (isLoading || error) {
-    return null;
-  }
-
-  if (portfoliosQuery.isLoading || portfoliosQuery.error) {
-    return null;
-  }
-
-  if (portfoliosQuery.data.portfolios.length === 0) {
-    return null;
-  }
-
-  const isMyPortfolio =
-    portfoliosQuery.data.portfolios[0].id === myPortfoliosQuery.data?.portfolios[0].id;
 
   return (
     <div className="container mx-auto">
@@ -122,7 +125,7 @@ export function PortfolioPage({ slug }: Props) {
                   <SignInForm onClose={() => setModalId(undefined)} />
                 </DialogContent>
               </Dialog>
-            ) : !myPortfoliosQuery.data?.portfolios.length ? (
+            ) : !myPortfolio ? (
               <Dialog
                 open={modalId === "create-portfolio"}
                 onOpenChange={(open) => setModalId(open ? "create-portfolio" : undefined)}
@@ -136,7 +139,7 @@ export function PortfolioPage({ slug }: Props) {
               </Dialog>
             ) : (
               <Button size="sm" asChild>
-                <Link href={`/${myPortfoliosQuery.data.portfolios[0].slug}`}>My Portfolio</Link>
+                <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
               </Button>
             )}
             {!!user && (
@@ -152,11 +155,9 @@ export function PortfolioPage({ slug }: Props) {
           <Card>
             <div className="px-6 py-4">
               <h3 className="mb-1 scroll-m-20 text-2xl font-semibold tracking-tight">
-                {portfoliosQuery.data.portfolios[0].name}
+                {portfolio.name}
               </h3>
-              <p className="mb-2 text-sm text-muted-foreground">
-                {portfoliosQuery.data.portfolios[0].about}
-              </p>
+              <p className="mb-2 text-sm text-muted-foreground">{portfolio.about}</p>
             </div>
           </Card>
           <Card>
@@ -230,7 +231,7 @@ export function PortfolioPage({ slug }: Props) {
                             <Button
                               size="icon"
                               variant="ghost"
-                              onClick={() => db.transact(db.tx.contexts[context.id].delete())}
+                              onClick={() => db.transact(db.tx.contexts[context.id]!.delete())}
                             >
                               <Trash2 size="1rem" />
                             </Button>
@@ -245,16 +246,7 @@ export function PortfolioPage({ slug }: Props) {
           </Card>
         </div>
         <div className="col-span-8">
-          <Card>
-            <CardHeader>
-              <div>TODO: Chat</div>
-              <div>
-                Visitor: Tell me about Andy&apos;s coolest achievements, side projects, and work
-                experience.
-              </div>
-              <div>ChatGPT: ...</div>
-            </CardHeader>
-          </Card>
+          <Chat portfolio={portfolio} contexts={contextsQuery.data?.contexts || []} />
         </div>
       </div>
     </div>
