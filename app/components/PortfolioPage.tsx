@@ -104,53 +104,55 @@ export function PortfolioPage({ slug }: Props) {
   };
 
   return (
-    <div className="container mx-auto">
-      <NavigationMenu className="my-4">
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-              <Link href="/docs">Chatfolio</Link>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            {!user ? (
-              <Dialog
-                open={modalId === "sign-in"}
-                onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">Sign In</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <SignInForm onClose={() => setModalId(undefined)} />
-                </DialogContent>
-              </Dialog>
-            ) : !myPortfolio ? (
-              <Dialog
-                open={modalId === "create-portfolio"}
-                onOpenChange={(open) => setModalId(open ? "create-portfolio" : undefined)}
-              >
-                <DialogTrigger asChild>
-                  <Button size="sm">Create Portfolio</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <CreatePortfolioForm onClose={() => setModalId(undefined)} />
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <Button size="sm" asChild>
-                <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
-              </Button>
-            )}
-            {!!user && (
-              <Button size="sm" variant="secondary" onClick={() => db.auth.signOut()}>
-                Sign Out
-              </Button>
-            )}
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
-      <div className="grid grid-cols-12 gap-4">
+    <div className="flex h-screen flex-col">
+      <div className="container mx-auto">
+        <NavigationMenu className="flex-0 my-4">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+                <Link href="/docs">Chatfolio</Link>
+              </NavigationMenuLink>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              {!user ? (
+                <Dialog
+                  open={modalId === "sign-in"}
+                  onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">Sign In</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <SignInForm onClose={() => setModalId(undefined)} />
+                  </DialogContent>
+                </Dialog>
+              ) : !myPortfolio ? (
+                <Dialog
+                  open={modalId === "create-portfolio"}
+                  onOpenChange={(open) => setModalId(open ? "create-portfolio" : undefined)}
+                >
+                  <DialogTrigger asChild>
+                    <Button size="sm">Create Portfolio</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <CreatePortfolioForm onClose={() => setModalId(undefined)} />
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <Button size="sm" asChild>
+                  <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
+                </Button>
+              )}
+              {!!user && (
+                <Button size="sm" variant="secondary" onClick={() => db.auth.signOut()}>
+                  Sign Out
+                </Button>
+              )}
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+      </div>
+      <div className="container mx-auto grid min-h-0 flex-1 grid-cols-12 gap-4">
         <div className="col-span-4 flex flex-col gap-4">
           <Card>
             <div className="px-6 py-4">
@@ -249,7 +251,7 @@ export function PortfolioPage({ slug }: Props) {
             </CardContent>
           </Card>
         </div>
-        <div className="col-span-8">
+        <div className="col-span-8 flex min-h-0 flex-1 flex-col pb-8">
           <Chat portfolio={portfolio} contexts={contextsQuery.data?.contexts || []} />
         </div>
       </div>
