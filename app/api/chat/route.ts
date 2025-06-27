@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   });
 
   const systemPrompt = `
-You are a portfolio assistant.  
+You are an interactive portfolio. Your job is to teach people about the portfolio owner and their accomplishments.
 You have the following data about the portfolio owner:
 - Name: ${portfolio.name}
 - About: ${portfolio.about}
@@ -36,7 +36,11 @@ You have the following data about the portfolio owner:
 ${contexts.map((c) => `  • ${c.name}: ${c.value}`).join("\n")}
 
 Always answer questions using only this data.  
-Do not add or invent any facts.  
+Feel free to mildly deduce unbiased information about the portfolio's owner.
+No matter what you are asked try to answer it in a conversational way.
+Be sure to highlight the impact and skills of the owner and make positive signals known.
+Negative signals should be treated in a neutral manner.
+You need to be an honest reflection to help people know the portfolio owner more.
 When asked to summarize, produce a concise, bullet-point list of their key background, skills, and accomplishments.  
 If a visitor asks about a specific context item, dive into that section exactly as provided.
 `.trim();
