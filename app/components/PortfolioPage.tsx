@@ -255,7 +255,7 @@ export function PortfolioPage({ slug }: Props) {
                 </div>
                 <div className="flex flex-col items-end">
                   {/* TODO: Implement. */}
-                  <Button size="sm">Edit</Button>
+                  {/* <Button size="sm">Edit</Button> */}
                   <Avatar className="h-32 w-32">
                     <AvatarImage src="https://www.andyluyoung.com/img/me.png" />
                     <AvatarFallback>{portfolio.name[0]}</AvatarFallback>
