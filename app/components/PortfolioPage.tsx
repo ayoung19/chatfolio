@@ -5,6 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
@@ -15,6 +23,7 @@ import { AppSchema } from "@/instant.schema";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { InstaQLEntity } from "@instantdb/react";
+import { useClipboard } from "@mantine/hooks";
 import {
   IconBrandGithub,
   IconBrandInstagram,
@@ -22,7 +31,7 @@ import {
   IconFileCv,
   IconMail,
 } from "@tabler/icons-react";
-import { Download, Eye, Pencil, Trash2 } from "lucide-react";
+import { Copy, Download, Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Chat } from "./Chat";
@@ -37,6 +46,7 @@ interface Props {
 export function PortfolioPage({ slug }: Props) {
   // TODO: Modals manager.
   const [modalId, setModalId] = useState<string>();
+  const clipboard = useClipboard();
 
   const { user, isLoading, error } = db.useAuth();
 
@@ -104,6 +114,8 @@ export function PortfolioPage({ slug }: Props) {
 
   const resume = resumeQuery?.data?.$files[0];
 
+  const portfolioUrl = [window.location.origin, portfolio.slug].join("/");
+
   const downloadContext = async (context: InstaQLEntity<AppSchema, "contexts">) => {
     const mimeType = "application/text";
     const blob = new Blob([context.value], { type: mimeType });
@@ -133,14 +145,14 @@ export function PortfolioPage({ slug }: Props) {
                 <Link href="/docs">Chatfolio</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="flex items-center gap-2">
               {!user ? (
                 <Dialog
                   open={modalId === "sign-in"}
                   onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
                 >
                   <DialogTrigger asChild>
-                    <Button size="sm">Sign In</Button>
+                    <Button size="sm">Create Portfolio or Sign In</Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">
                     <SignInForm onClose={() => setModalId(undefined)} />
@@ -158,15 +170,36 @@ export function PortfolioPage({ slug }: Props) {
                     <CreatePortfolioForm onClose={() => setModalId(undefined)} />
                   </DialogContent>
                 </Dialog>
+              ) : isMyPortfolio ? (
+                <Button
+                  variant="secondary"
+                  className="w-[300px]"
+                  size="sm"
+                  onClick={() => clipboard.copy(portfolioUrl)}
+                >
+                  <div className="flex w-full items-center justify-between">
+                    <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
+                    <Copy size="0.5rem" />
+                  </div>
+                </Button>
               ) : (
                 <Button size="sm" asChild>
                   <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
                 </Button>
               )}
               {!!user && (
-                <Button size="sm" variant="secondary" onClick={() => db.auth.signOut()}>
-                  Sign Out
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>A</AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" side="bottom">
+                    <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => db.auth.signOut()}>Log out</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -222,7 +255,7 @@ export function PortfolioPage({ slug }: Props) {
                 </div>
                 <div className="flex flex-col items-end">
                   {/* TODO: Implement. */}
-                  {/* <Button size="sm">Edit</Button> */}
+                  <Button size="sm">Edit</Button>
                   <Avatar className="h-32 w-32">
                     <AvatarImage src="https://www.andyluyoung.com/img/me.png" />
                     <AvatarFallback>{portfolio.name[0]}</AvatarFallback>
