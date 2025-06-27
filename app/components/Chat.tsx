@@ -47,7 +47,7 @@ Please concisely describe ${portfolio.name}'s background, skills, and key accomp
           {!inViewport && (
             <div className="absolute inset-x-0 bottom-0 flex justify-center pb-2">
               <Button size="icon" onClick={() => scrollToBottom()}>
-                <ArrowDown size="1rem" />
+                <ArrowDown />
               </Button>
             </div>
           )}
@@ -85,7 +85,7 @@ Please concisely describe ${portfolio.name}'s background, skills, and key accomp
               onChange={handleInputChange}
             />
             <Button type="submit" size="icon">
-              <Send size="1rem" />
+              <Send />
             </Button>
           </div>
         </form>

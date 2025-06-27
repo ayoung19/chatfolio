@@ -15,6 +15,10 @@ const _schema = i.schema({
       slug: i.string().unique(),
       name: i.string(),
       about: i.string(),
+      linkedin: i.string(),
+      github: i.string(),
+      instagram: i.string(),
+      email: i.string(),
     }),
     contexts: i.entity({
       name: i.string(),

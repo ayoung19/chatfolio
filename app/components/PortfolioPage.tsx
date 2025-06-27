@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -14,6 +15,13 @@ import { AppSchema } from "@/instant.schema";
 import { db } from "@/lib/db";
 import { cn } from "@/lib/utils";
 import { InstaQLEntity } from "@instantdb/react";
+import {
+  IconBrandGithub,
+  IconBrandInstagram,
+  IconBrandLinkedin,
+  IconFileCv,
+  IconMail,
+} from "@tabler/icons-react";
 import { Download, Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -66,6 +74,16 @@ export function PortfolioPage({ slug }: Props) {
       : null,
   );
 
+  const resumeQuery = db.useQuery({
+    $files: {
+      $: {
+        where: {
+          path: `resumes/${slug}.pdf`,
+        },
+      },
+    },
+  });
+
   // TODO: Better handling.
   if (isLoading || error) {
     return null;
@@ -83,6 +101,8 @@ export function PortfolioPage({ slug }: Props) {
   }
 
   const isMyPortfolio = portfolio.id === myPortfolio?.id;
+
+  const resume = resumeQuery?.data?.$files[0];
 
   const downloadContext = async (context: InstaQLEntity<AppSchema, "contexts">) => {
     const mimeType = "application/text";
@@ -104,10 +124,10 @@ export function PortfolioPage({ slug }: Props) {
   };
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex max-h-[1800px] flex-col lg:h-screen">
       <div className="container mx-auto">
         <NavigationMenu className="flex-0 my-4">
-          <NavigationMenuList>
+          <NavigationMenuList className="flex justify-between">
             <NavigationMenuItem>
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                 <Link href="/docs">Chatfolio</Link>
@@ -153,13 +173,62 @@ export function PortfolioPage({ slug }: Props) {
         </NavigationMenu>
       </div>
       <div className="container mx-auto grid min-h-0 flex-1 grid-cols-12 gap-4">
-        <div className="col-span-4 flex flex-col gap-4">
+        <div className="col-span-12 flex flex-col gap-4 lg:col-span-5 xl:col-span-4">
           <Card>
-            <div className="px-6 py-4">
-              <h3 className="mb-1 scroll-m-20 text-2xl font-semibold tracking-tight">
-                {portfolio.name}
-              </h3>
-              <p className="mb-2 text-sm text-muted-foreground">{portfolio.about}</p>
+            <div className="gap-4 px-6 py-4">
+              <div className="flex items-start">
+                <div>
+                  <h3 className="mb-1 scroll-m-20 text-2xl font-semibold tracking-tight">
+                    {portfolio.name}
+                  </h3>
+                  <p className="mb-2 text-sm text-muted-foreground">{portfolio.about}</p>
+                  <div className="flex gap-2">
+                    {portfolio.linkedin && (
+                      <Button size="icon" variant="outline" asChild>
+                        <Link href={portfolio.linkedin} target="_blank">
+                          <IconBrandLinkedin />
+                        </Link>
+                      </Button>
+                    )}
+                    {portfolio.github && (
+                      <Button size="icon" variant="outline">
+                        <Link href={portfolio.github} target="_blank">
+                          <IconBrandGithub />
+                        </Link>
+                      </Button>
+                    )}
+                    {portfolio.instagram && (
+                      <Button size="icon" variant="outline">
+                        <Link href={portfolio.instagram} target="_blank">
+                          <IconBrandInstagram />
+                        </Link>
+                      </Button>
+                    )}
+                    {portfolio.email && (
+                      <Button size="icon" variant="outline">
+                        <Link href={`mailto:${portfolio.email}`} target="_blank">
+                          <IconMail />
+                        </Link>
+                      </Button>
+                    )}
+                    {resume && (
+                      <Button size="icon" variant="outline">
+                        <Link href={resume.url} target="_blank">
+                          <IconFileCv />
+                        </Link>
+                      </Button>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col items-end">
+                  {/* TODO: Implement. */}
+                  {/* <Button size="sm">Edit</Button> */}
+                  <Avatar className="h-32 w-32">
+                    <AvatarImage src="https://www.andyluyoung.com/img/me.png" />
+                    <AvatarFallback>{portfolio.name[0]}</AvatarFallback>
+                  </Avatar>
+                </div>
+              </div>
             </div>
           </Card>
           <Card>
@@ -194,7 +263,7 @@ export function PortfolioPage({ slug }: Props) {
                         >
                           <DialogTrigger asChild>
                             <Button size="icon" variant="ghost">
-                              <Eye size="1rem" />
+                              <Eye />
                             </Button>
                           </DialogTrigger>
                           <DialogContent className="sm:max-w-[425px]">
@@ -211,7 +280,7 @@ export function PortfolioPage({ slug }: Props) {
                           variant="ghost"
                           onClick={() => downloadContext(context)}
                         >
-                          <Download size="1rem" />
+                          <Download />
                         </Button>
                         {isMyPortfolio && (
                           <>
@@ -223,7 +292,7 @@ export function PortfolioPage({ slug }: Props) {
                             >
                               <DialogTrigger asChild>
                                 <Button size="icon" variant="ghost">
-                                  <Pencil size="1rem" />
+                                  <Pencil />
                                 </Button>
                               </DialogTrigger>
                               <DialogContent className="sm:max-w-[425px]">
@@ -239,7 +308,7 @@ export function PortfolioPage({ slug }: Props) {
                               variant="ghost"
                               onClick={() => db.transact(db.tx.contexts[context.id]!.delete())}
                             >
-                              <Trash2 size="1rem" />
+                              <Trash2 />
                             </Button>
                           </>
                         )}
@@ -251,7 +320,7 @@ export function PortfolioPage({ slug }: Props) {
             </CardContent>
           </Card>
         </div>
-        <div className="col-span-8 flex min-h-0 flex-1 flex-col pb-8">
+        <div className="col-span-12 flex min-h-0 flex-1 flex-col pb-8 lg:col-span-7 xl:col-span-8">
           <Chat portfolio={portfolio} contexts={contextsQuery.data?.contexts || []} />
         </div>
       </div>
