@@ -191,7 +191,7 @@ export function PortfolioPage({ slug }: Props) {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-full md:max-w-[768px]">
-                  <CreatePortfolioForm onClose={() => setModalId(undefined)} />
+                  <CreatePortfolioForm />
                 </DialogContent>
               </Dialog>
               {!!user &&

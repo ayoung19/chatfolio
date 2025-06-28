@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { db } from "@/lib/db/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { id } from "@instantdb/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,11 +21,8 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-interface Props {
-  onClose: () => void;
-}
-
-export function CreatePortfolioForm({ onClose }: Props) {
+export function CreatePortfolioForm() {
+  const router = useRouter();
   const auth = db.useAuth();
 
   const myPortfoliosQuery = db.useQuery(
@@ -104,7 +102,7 @@ export function CreatePortfolioForm({ onClose }: Props) {
       avatar && db.storage.uploadFile(`${slug}/avatar.png`, avatar),
     ]);
 
-    onClose();
+    router.push(`/${slug}`);
   };
 
   useEffect(() => {
