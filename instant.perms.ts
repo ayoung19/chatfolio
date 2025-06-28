@@ -7,13 +7,14 @@ const rules = {
   $files: {
     allow: {
       view: "true",
-      create: "isOwner",
+      // TODO: Fix.
+      create: "true",
       update: "isOwner",
       delete: "isOwner",
     },
     bind: [
       "isOwner",
-      "auth.ref('$user.portfolio.slug') != [] && data.path == ('resumes/' + auth.ref('$user.portfolio.slug')[0] + '.pdf')",
+      "auth.ref('$user.portfolio.slug') != [] && data.path.startsWith(auth.ref('$user.portfolio.slug')[0] + '/')",
     ],
   },
   portfolios: {

@@ -84,15 +84,33 @@ export function PortfolioPage({ slug }: Props) {
       : null,
   );
 
-  const resumeQuery = db.useQuery({
-    $files: {
-      $: {
-        where: {
-          path: `resumes/${slug}.pdf`,
-        },
-      },
-    },
-  });
+  const resumeQuery = db.useQuery(
+    user
+      ? {
+          $files: {
+            $: {
+              where: {
+                path: `${slug}/resume.pdf`,
+              },
+            },
+          },
+        }
+      : null,
+  );
+
+  const avatarQuery = db.useQuery(
+    user
+      ? {
+          $files: {
+            $: {
+              where: {
+                path: `${slug}/avatar.png`,
+              },
+            },
+          },
+        }
+      : null,
+  );
 
   // TODO: Better handling.
   if (isLoading || error) {
@@ -113,6 +131,7 @@ export function PortfolioPage({ slug }: Props) {
   const isMyPortfolio = portfolio.id === myPortfolio?.id;
 
   const resume = resumeQuery?.data?.$files[0];
+  const avatar = avatarQuery?.data?.$files[0];
 
   const portfolioUrl = [window.location.origin, portfolio.slug].join("/");
 
@@ -146,47 +165,54 @@ export function PortfolioPage({ slug }: Props) {
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex items-center gap-2">
-              {!user ? (
-                <Dialog
-                  open={modalId === "sign-in"}
-                  onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">Create Portfolio or Sign In</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <SignInForm onClose={() => setModalId(undefined)} />
-                  </DialogContent>
-                </Dialog>
-              ) : !myPortfolio ? (
-                <Dialog
-                  open={modalId === "create-portfolio"}
-                  onOpenChange={(open) => setModalId(open ? "create-portfolio" : undefined)}
-                >
-                  <DialogTrigger asChild>
-                    <Button size="sm">Create Portfolio</Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <CreatePortfolioForm onClose={() => setModalId(undefined)} />
-                  </DialogContent>
-                </Dialog>
-              ) : isMyPortfolio ? (
-                <Button
-                  variant="secondary"
-                  className="w-[300px]"
-                  size="sm"
-                  onClick={() => clipboard.copy(portfolioUrl)}
-                >
-                  <div className="flex w-full items-center justify-between">
-                    <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
-                    <Copy size="0.5rem" />
-                  </div>
-                </Button>
-              ) : (
-                <Button size="sm" asChild>
-                  <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
-                </Button>
-              )}
+              <Dialog
+                open={modalId === "sign-in"}
+                onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
+              >
+                <DialogTrigger asChild>
+                  <Button size="sm" className={cn("hidden", !user && "inline-flex")}>
+                    Create Portfolio or Sign In
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <SignInForm onClose={() => setModalId(undefined)} />
+                </DialogContent>
+              </Dialog>
+              <Dialog
+                open={modalId === "create-portfolio"}
+                onOpenChange={(open) => setModalId(open ? "create-portfolio" : undefined)}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    size="sm"
+                    className={cn("hidden", !!user && !myPortfolio && "inline-flex")}
+                  >
+                    Create Portfolio
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-full md:max-w-[768px]">
+                  <CreatePortfolioForm onClose={() => setModalId(undefined)} />
+                </DialogContent>
+              </Dialog>
+              {!!user &&
+                !!myPortfolio &&
+                (isMyPortfolio ? (
+                  <Button
+                    variant="secondary"
+                    className="w-[300px]"
+                    size="sm"
+                    onClick={() => clipboard.copy(portfolioUrl)}
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
+                      <Copy size="0.5rem" />
+                    </div>
+                  </Button>
+                ) : (
+                  <Button size="sm" asChild>
+                    <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
+                  </Button>
+                ))}
               {!!user && (
                 <DropdownMenu>
                   <DropdownMenuTrigger>
@@ -256,10 +282,12 @@ export function PortfolioPage({ slug }: Props) {
                 <div className="flex flex-col items-end">
                   {/* TODO: Implement. */}
                   {/* <Button size="sm">Edit</Button> */}
-                  <Avatar className="h-32 w-32">
-                    <AvatarImage src="https://www.andyluyoung.com/img/me.png" />
-                    <AvatarFallback>{portfolio.name[0]}</AvatarFallback>
-                  </Avatar>
+                  {avatar && (
+                    <Avatar className="h-32 w-32">
+                      <AvatarImage src={avatar.url} />
+                      <AvatarFallback>{portfolio.name[0] || null}</AvatarFallback>
+                    </Avatar>
+                  )}
                 </div>
               </div>
             </div>
@@ -275,7 +303,7 @@ export function PortfolioPage({ slug }: Props) {
                   <DialogTrigger asChild>
                     <Button size="sm">Add</Button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
+                  <DialogContent className="max-w-full md:max-w-[768px]">
                     <UpdateContextForm slug={slug} onClose={() => setModalId(undefined)} />
                   </DialogContent>
                 </Dialog>
@@ -299,7 +327,7 @@ export function PortfolioPage({ slug }: Props) {
                               <Eye />
                             </Button>
                           </DialogTrigger>
-                          <DialogContent className="sm:max-w-[425px]">
+                          <DialogContent className="max-w-full md:max-w-[768px]">
                             <UpdateContextForm
                               context={context}
                               slug={slug}
@@ -328,7 +356,7 @@ export function PortfolioPage({ slug }: Props) {
                                   <Pencil />
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
+                              <DialogContent className="max-w-full md:max-w-[768px]">
                                 <UpdateContextForm
                                   context={context}
                                   slug={slug}
