@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { AppSchema } from "@/instant.schema";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { id, InstaQLEntity, lookup } from "@instantdb/react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";

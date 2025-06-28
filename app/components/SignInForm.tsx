@@ -7,7 +7,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Label } from "@/components/ui/label";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PencilLine } from "lucide-react";
 import { useEffect, useState } from "react";

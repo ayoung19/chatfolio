@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { AppSchema } from "@/instant.schema";
+import { db } from "@/lib/db/react";
 import { useChat } from "@ai-sdk/react";
 import { InstaQLEntity } from "@instantdb/react";
 import { useInViewport } from "@mantine/hooks";
@@ -13,9 +14,12 @@ import { Markdown } from "./Markdown";
 interface Props {
   portfolio: InstaQLEntity<AppSchema, "portfolios">;
   contexts: InstaQLEntity<AppSchema, "contexts">[];
+  openSignInModal: () => void;
 }
 
-export function Chat({ portfolio, contexts }: Props) {
+export function Chat({ portfolio, contexts, openSignInModal }: Props) {
+  const { user } = db.useAuth();
+
   const { ref, inViewport } = useInViewport();
   const anchorRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +76,13 @@ Please concisely describe ${portfolio.name}'s background, skills, and key accomp
         </ScrollArea>
         <form
           onSubmit={(e) => {
+            // TODO: Server side auth.
+            if (!user) {
+              e.preventDefault();
+              openSignInModal();
+              return;
+            }
+
             handleSubmit(e);
             scrollToBottom();
           }}

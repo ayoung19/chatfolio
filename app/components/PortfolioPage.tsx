@@ -20,7 +20,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { AppSchema } from "@/instant.schema";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db/react";
 import { cn } from "@/lib/utils";
 import { InstaQLEntity } from "@instantdb/react";
 import { useClipboard } from "@mantine/hooks";
@@ -382,7 +382,11 @@ export function PortfolioPage({ slug }: Props) {
           </Card>
         </div>
         <div className="col-span-12 flex min-h-0 flex-1 flex-col pb-8 lg:col-span-7 xl:col-span-8">
-          <Chat portfolio={portfolio} contexts={contextsQuery.data?.contexts || []} />
+          <Chat
+            portfolio={portfolio}
+            contexts={contextsQuery.data?.contexts || []}
+            openSignInModal={() => setModalId("sign-in")}
+          />
         </div>
       </div>
     </div>
