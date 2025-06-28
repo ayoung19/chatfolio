@@ -84,33 +84,25 @@ export function PortfolioPage({ slug }: Props) {
       : null,
   );
 
-  const resumeQuery = db.useQuery(
-    user
-      ? {
-          $files: {
-            $: {
-              where: {
-                path: `${slug}/resume.pdf`,
-              },
-            },
-          },
-        }
-      : null,
-  );
+  const resumeQuery = db.useQuery({
+    $files: {
+      $: {
+        where: {
+          path: `${slug}/resume.pdf`,
+        },
+      },
+    },
+  });
 
-  const avatarQuery = db.useQuery(
-    user
-      ? {
-          $files: {
-            $: {
-              where: {
-                path: `${slug}/avatar.png`,
-              },
-            },
-          },
-        }
-      : null,
-  );
+  const avatarQuery = db.useQuery({
+    $files: {
+      $: {
+        where: {
+          path: `${slug}/avatar.png`,
+        },
+      },
+    },
+  });
 
   // TODO: Better handling.
   if (isLoading || error) {
