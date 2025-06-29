@@ -182,7 +182,7 @@ export function PortfolioPage({ slug }: Props) {
                     Create Portfolio
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-full md:max-w-[768px]">
+                <DialogContent className="max-h-screen max-w-full overflow-y-auto md:max-w-[768px]">
                   <CreatePortfolioForm />
                 </DialogContent>
               </Dialog>

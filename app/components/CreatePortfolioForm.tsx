@@ -23,15 +23,15 @@ type FormValues = z.infer<typeof schema>;
 
 export function CreatePortfolioForm() {
   const router = useRouter();
-  const auth = db.useAuth();
+  const { user } = db.useAuth();
 
   const myPortfoliosQuery = db.useQuery(
-    auth.user
+    user
       ? {
           portfolios: {
             $: {
               where: {
-                "$user.id": auth.user.id,
+                "$user.id": user.id,
               },
             },
           },
@@ -43,6 +43,8 @@ export function CreatePortfolioForm() {
 
   const {
     control,
+    watch,
+    setValue,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
@@ -81,7 +83,7 @@ export function CreatePortfolioForm() {
           github,
           instagram,
           email,
-        }).link({ $user: auth.user?.id }),
+        }).link({ $user: user?.id }),
       );
     } catch (e) {
       console.log(e);
@@ -113,9 +115,17 @@ export function CreatePortfolioForm() {
     uploadFilesAndCloseModal(myPortfolio.slug, resume, avatar);
   }, [myPortfolio, resume, avatar]);
 
+  // TODO: Make sure default value is unique.
+  useEffect(() => {
+    if (!user?.email) {
+      return;
+    }
+
+    setValue("slug", user.email.split("@")[0] || "");
+  }, [user?.email]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* TODO: Slug default value. */}
       <Controller
         name="slug"
         control={control}
@@ -126,8 +136,11 @@ export function CreatePortfolioForm() {
             {errors.slug?.message ? (
               <p className="text-sm text-red-400">{errors.slug.message}</p>
             ) : (
-              // <p className="text-sm text-muted-foreground">TODO: Description</p>
-              <></>
+              <p className="text-sm text-muted-foreground">
+                The link to your portfolio will be
+                <> </>
+                {[window.location.origin, watch("slug")].join("/")}
+              </p>
             )}
           </div>
         )}
