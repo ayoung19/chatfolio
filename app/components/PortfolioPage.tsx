@@ -150,13 +150,31 @@ export function PortfolioPage({ slug }: Props) {
     <div className="flex max-h-[1800px] flex-col lg:h-screen">
       <div className="container mx-auto">
         <NavigationMenu className="flex-0 my-4">
-          <NavigationMenuList className="flex justify-between">
-            <NavigationMenuItem>
+          <NavigationMenuList className="flex items-center justify-center">
+            <NavigationMenuItem className="flex-1">
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                <Link href="/docs">Chatfolio</Link>
+                <Link href="/">Chatfolio</Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
-            <NavigationMenuItem className="flex items-center gap-2">
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                asChild
+                className={navigationMenuTriggerStyle()}
+                active={window.location.pathname === "/"}
+              >
+                <Link href="/">Latest Portfolio</Link>
+              </NavigationMenuLink>
+              {myPortfolio !== undefined && (
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                  active={window.location.pathname === `/${myPortfolio.slug}`}
+                >
+                  <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
+                </NavigationMenuLink>
+              )}
+            </NavigationMenuItem>
+            <NavigationMenuItem className="flex flex-1 items-center justify-end gap-2">
               <Dialog
                 open={modalId === "sign-in"}
                 onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
@@ -186,30 +204,24 @@ export function PortfolioPage({ slug }: Props) {
                   <CreatePortfolioForm />
                 </DialogContent>
               </Dialog>
-              {!!user &&
-                !!myPortfolio &&
-                (isMyPortfolio ? (
-                  <Button
-                    variant="secondary"
-                    className="w-[300px]"
-                    size="sm"
-                    onClick={() => clipboard.copy(portfolioUrl)}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
-                      <Copy size="0.5rem" />
-                    </div>
-                  </Button>
-                ) : (
-                  <Button size="sm" asChild>
-                    <Link href={`/${myPortfolio.slug}`}>My Portfolio</Link>
-                  </Button>
-                ))}
+              {isMyPortfolio && (
+                <Button
+                  variant="secondary"
+                  className="w-[300px]"
+                  size="sm"
+                  onClick={() => clipboard.copy(portfolioUrl)}
+                >
+                  <div className="flex w-full items-center justify-between">
+                    <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
+                    <Copy size="0.5rem" />
+                  </div>
+                </Button>
+              )}
               {!!user && (
                 <DropdownMenu>
                   <DropdownMenuTrigger>
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>A</AvatarFallback>
+                      <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
                     </Avatar>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" side="bottom">
