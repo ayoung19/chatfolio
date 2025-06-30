@@ -19,6 +19,7 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { Separator } from "@/components/ui/separator";
 import { AppSchema } from "@/instant.schema";
 import { db } from "@/lib/db/react";
 import { cn } from "@/lib/utils";
@@ -36,6 +37,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Chat } from "./Chat";
 import { CreatePortfolioForm } from "./CreatePortfolioForm";
+import { ModeToggle } from "./ModeToggle";
 import { SignInForm } from "./SignInForm";
 import { UpdateContextForm } from "./UpdateContextForm";
 
@@ -148,10 +150,10 @@ export function PortfolioPage({ slug }: Props) {
 
   return (
     <div className="flex max-h-[1800px] flex-col lg:h-screen">
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4 sm:px-0">
         <NavigationMenu className="flex-0 my-4">
           <NavigationMenuList className="flex items-center justify-center">
-            <NavigationMenuItem className="flex-1">
+            <NavigationMenuItem className="hidden flex-1 sm:list-item">
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
                 <Link href="/">Chatfolio</Link>
               </NavigationMenuLink>
@@ -164,7 +166,7 @@ export function PortfolioPage({ slug }: Props) {
               >
                 <Link href="/">Latest Portfolio</Link>
               </NavigationMenuLink>
-              {myPortfolio !== undefined && (
+              {myPortfolio && (
                 <NavigationMenuLink
                   asChild
                   className={navigationMenuTriggerStyle()}
@@ -180,7 +182,7 @@ export function PortfolioPage({ slug }: Props) {
                 onOpenChange={(open) => setModalId(open ? "sign-in" : undefined)}
               >
                 <DialogTrigger asChild>
-                  <Button size="sm" className={cn("hidden", !user && "inline-flex")}>
+                  <Button variant="cta" size="sm" className={cn("hidden", !user && "inline-flex")}>
                     Create Portfolio or Sign In
                   </Button>
                 </DialogTrigger>
@@ -194,6 +196,7 @@ export function PortfolioPage({ slug }: Props) {
               >
                 <DialogTrigger asChild>
                   <Button
+                    variant="cta"
                     size="sm"
                     className={cn("hidden", !!user && !myPortfolio && "inline-flex")}
                   >
@@ -217,25 +220,30 @@ export function PortfolioPage({ slug }: Props) {
                   </div>
                 </Button>
               )}
-              {!!user && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" side="bottom">
-                    <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => db.auth.signOut()}>Log out</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              {user && (
+                <>
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" side="bottom">
+                      <DropdownMenuLabel>{user.email}</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => db.auth.signOut()}>Log out</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
               )}
+              <Separator orientation="vertical" className="ml-2 h-4" />
+              <ModeToggle />
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      <div className="container mx-auto grid min-h-0 flex-1 grid-cols-12 gap-4">
+      <div className="container mx-auto grid min-h-0 flex-1 grid-cols-12 gap-4 px-4 sm:px-0">
         <div className="col-span-12 flex flex-col gap-4 lg:col-span-5 xl:col-span-4">
           <Card>
             <div className="gap-4 px-6 py-4">

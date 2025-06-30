@@ -59,7 +59,7 @@ Please concisely describe ${portfolio.name}'s background, skills, and key accomp
             <div key={message.id}>
               {message.role === "user" ? (
                 <div className="flex justify-end">
-                  <Card className="my-4 max-w-[600px] border-gray-100 bg-gray-100 shadow-none">
+                  <Card className="my-4 max-w-[600px] border-secondary bg-secondary shadow-none">
                     <div className="px-4 py-2">
                       <p>{message.content}</p>
                     </div>
