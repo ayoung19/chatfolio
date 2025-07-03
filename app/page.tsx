@@ -6,7 +6,7 @@ export default async function Home() {
     portfolios: {
       $: {
         limit: 1,
-        order: { serverCreatedAt: "desc" },
+        order: { serverCreatedAt: "asc" },
       },
     },
   });
