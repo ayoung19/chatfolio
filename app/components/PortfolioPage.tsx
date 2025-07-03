@@ -34,6 +34,7 @@ import {
 } from "@tabler/icons-react";
 import { Copy, Download, Eye, Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Chat } from "./Chat";
 import { CreatePortfolioForm } from "./CreatePortfolioForm";
@@ -46,6 +47,7 @@ interface Props {
 }
 
 export function PortfolioPage({ slug }: Props) {
+  const router = useRouter();
   // TODO: Modals manager.
   const [modalId, setModalId] = useState<string>();
   const clipboard = useClipboard();
@@ -59,18 +61,10 @@ export function PortfolioPage({ slug }: Props) {
           slug,
         },
       },
+      contexts: {},
     },
   });
-
-  const contextsQuery = db.useQuery({
-    contexts: {
-      $: {
-        where: {
-          "portfolio.slug": slug,
-        },
-      },
-    },
-  });
+  const portfolio = portfoliosQuery.data?.portfolios[0];
 
   const myPortfoliosQuery = db.useQuery(
     user
@@ -85,26 +79,35 @@ export function PortfolioPage({ slug }: Props) {
         }
       : null,
   );
+  const myPortfolio = user && myPortfoliosQuery.data?.portfolios[0];
 
-  const resumeQuery = db.useQuery({
-    $files: {
-      $: {
-        where: {
-          path: `${slug}/resume.pdf`,
-        },
-      },
-    },
-  });
+  const resumeQuery = db.useQuery(
+    portfolio
+      ? {
+          $files: {
+            $: {
+              where: {
+                path: `${portfolio.id}/resume.pdf`,
+              },
+            },
+          },
+        }
+      : null,
+  );
 
-  const avatarQuery = db.useQuery({
-    $files: {
-      $: {
-        where: {
-          path: `${slug}/avatar.png`,
-        },
-      },
-    },
-  });
+  const avatarQuery = db.useQuery(
+    portfolio
+      ? {
+          $files: {
+            $: {
+              where: {
+                path: `${portfolio.id}/avatar.png`,
+              },
+            },
+          },
+        }
+      : null,
+  );
 
   // TODO: Better handling.
   if (isLoading || error) {
@@ -114,9 +117,6 @@ export function PortfolioPage({ slug }: Props) {
   if (portfoliosQuery.isLoading || portfoliosQuery.error) {
     return null;
   }
-
-  const portfolio = portfoliosQuery.data.portfolios[0];
-  const myPortfolio = myPortfoliosQuery.data?.portfolios[0];
 
   if (portfolio === undefined) {
     return null;
@@ -204,7 +204,12 @@ export function PortfolioPage({ slug }: Props) {
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-h-screen max-w-full overflow-y-auto md:max-w-[768px]">
-                  <CreatePortfolioForm />
+                  <CreatePortfolioForm
+                    onClose={(slug) => {
+                      setModalId(undefined);
+                      router.push(`/${slug}`);
+                    }}
+                  />
                 </DialogContent>
               </Dialog>
               {isMyPortfolio && (
@@ -291,9 +296,26 @@ export function PortfolioPage({ slug }: Props) {
                     )}
                   </div>
                 </div>
-                <div className="flex flex-col items-end">
-                  {/* TODO: Implement. */}
-                  {/* <Button size="sm">Edit</Button> */}
+                <div className="flex flex-1 flex-col items-end">
+                  <CardAction className={cn(!isMyPortfolio && "invisible")}>
+                    <Dialog
+                      open={modalId === "edit-portfolio"}
+                      onOpenChange={(open) => setModalId(open ? "edit-portfolio" : undefined)}
+                    >
+                      <DialogTrigger asChild>
+                        <Button size="sm">Edit</Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-full md:max-w-[768px]">
+                        <CreatePortfolioForm
+                          portfolio={portfolio}
+                          onClose={(slug) => {
+                            setModalId(undefined);
+                            router.push(`/${slug}`);
+                          }}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </CardAction>
                   {avatar && (
                     <Avatar className="h-32 w-32">
                       <AvatarImage src={avatar.url} />
@@ -323,7 +345,7 @@ export function PortfolioPage({ slug }: Props) {
             </div>
             <CardContent>
               <div className="flex flex-col gap-4">
-                {contextsQuery.data?.contexts.map((context) => (
+                {portfolio.contexts.map((context) => (
                   <Card key={context.id} className="shadow-none">
                     <div className="flex items-center justify-between px-6 py-4">
                       <CardTitle>{context.name}</CardTitle>
@@ -396,7 +418,7 @@ export function PortfolioPage({ slug }: Props) {
         <div className="col-span-12 flex min-h-0 flex-1 flex-col pb-8 lg:col-span-7 xl:col-span-8">
           <Chat
             portfolio={portfolio}
-            contexts={contextsQuery.data?.contexts || []}
+            contexts={portfolio.contexts}
             openSignInModal={() => setModalId("sign-in")}
           />
         </div>

@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { AppSchema } from "@/instant.schema";
 import { db } from "@/lib/db/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { id } from "@instantdb/react";
-import { useRouter } from "next/navigation";
+import { id, InstaQLEntity } from "@instantdb/react";
 import { useEffect, useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,25 +21,13 @@ const schema = z.object({
 });
 type FormValues = z.infer<typeof schema>;
 
-export function CreatePortfolioForm() {
-  const router = useRouter();
+interface Props {
+  portfolio?: InstaQLEntity<AppSchema, "portfolios">;
+  onClose: (slug: string) => void;
+}
+
+export function CreatePortfolioForm({ portfolio, onClose }: Props) {
   const { user } = db.useAuth();
-
-  const myPortfoliosQuery = db.useQuery(
-    user
-      ? {
-          portfolios: {
-            $: {
-              where: {
-                "$user.id": user.id,
-              },
-            },
-          },
-        }
-      : null,
-  );
-
-  const myPortfolio = myPortfoliosQuery.data?.portfolios[0];
 
   const {
     control,
@@ -48,7 +36,7 @@ export function CreatePortfolioForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
-    defaultValues: {
+    defaultValues: portfolio || {
       slug: "",
       name: "",
       about: "",
@@ -74,8 +62,10 @@ export function CreatePortfolioForm() {
     email,
   }) => {
     try {
+      const portfolioId = portfolio?.id || id();
+
       await db.transact(
-        db.tx.portfolios[id()]!.update({
+        db.tx.portfolios[portfolioId]!.update({
           slug,
           name,
           about,
@@ -85,6 +75,13 @@ export function CreatePortfolioForm() {
           email,
         }).link({ $user: user?.id }),
       );
+
+      await Promise.all([
+        resume && db.storage.uploadFile(`${portfolioId}/resume.pdf`, resume),
+        avatar && db.storage.uploadFile(`${portfolioId}/avatar.png`, avatar),
+      ]);
+
+      onClose(slug);
     } catch (e) {
       console.log(e);
 
@@ -94,35 +91,14 @@ export function CreatePortfolioForm() {
     }
   };
 
-  const uploadFilesAndCloseModal = async (
-    slug: string,
-    resume: File | null,
-    avatar: File | null,
-  ) => {
-    await Promise.all([
-      resume && db.storage.uploadFile(`${slug}/resume.pdf`, resume),
-      avatar && db.storage.uploadFile(`${slug}/avatar.png`, avatar),
-    ]);
-
-    router.push(`/${slug}`);
-  };
-
-  useEffect(() => {
-    if (!myPortfolio) {
-      return;
-    }
-
-    uploadFilesAndCloseModal(myPortfolio.slug, resume, avatar);
-  }, [myPortfolio, resume, avatar]);
-
   // TODO: Make sure default value is unique.
   useEffect(() => {
-    if (!user?.email) {
+    if (portfolio !== undefined || !user?.email) {
       return;
     }
 
-    setValue("slug", user.email.split("@")[0] || "");
-  }, [user?.email]);
+    setValue("slug", `${user.email.split("@")[0]}-${crypto.randomUUID().slice(0, 8)}` || "");
+  }, [portfolio !== undefined, user?.email]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

@@ -14,7 +14,7 @@ const rules = {
     },
     bind: [
       "isOwner",
-      "auth.ref('$user.portfolio.slug') != [] && data.path.startsWith(auth.ref('$user.portfolio.slug')[0] + '/')",
+      "auth.ref('$user.portfolio.id') != [] && data.path.startsWith(auth.ref('$user.portfolio.id')[0] + '/')",
     ],
   },
   portfolios: {
