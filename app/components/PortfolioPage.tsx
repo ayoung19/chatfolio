@@ -213,21 +213,23 @@ export function PortfolioPage({ slug }: Props) {
                 </DialogContent>
               </Dialog>
               {isMyPortfolio && (
-                <Button
-                  variant="secondary"
-                  className="w-[300px]"
-                  size="sm"
-                  onClick={() => clipboard.copy(portfolioUrl)}
-                >
-                  <div className="flex w-full items-center justify-between">
-                    <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
-                    <Copy size="0.5rem" />
-                  </div>
-                </Button>
+                <>
+                  <Button
+                    variant="secondary"
+                    className="w-[300px]"
+                    size="sm"
+                    onClick={() => clipboard.copy(portfolioUrl)}
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
+                      <Copy size="0.5rem" />
+                    </div>
+                  </Button>
+                  <Separator orientation="vertical" className="mx-2 h-4" />
+                </>
               )}
               {user && (
                 <>
-                  <Separator orientation="vertical" className="mx-2 h-4" />
                   <DropdownMenu>
                     <DropdownMenuTrigger>
                       <Avatar className="h-8 w-8">
@@ -240,9 +242,9 @@ export function PortfolioPage({ slug }: Props) {
                       <DropdownMenuItem onClick={() => db.auth.signOut()}>Log out</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                  <Separator orientation="vertical" className="ml-2 h-4" />
                 </>
               )}
-              <Separator orientation="vertical" className="ml-2 h-4" />
               <ModeToggle />
             </NavigationMenuItem>
           </NavigationMenuList>
