@@ -33,6 +33,7 @@ import {
   IconMail,
 } from "@tabler/icons-react";
 import { Copy, Download, Eye, Pencil, Trash2 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -155,7 +156,10 @@ export function PortfolioPage({ slug }: Props) {
           <NavigationMenuList className="flex items-center justify-center">
             <NavigationMenuItem className="hidden flex-1 sm:list-item">
               <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-                <Link href="/">Chatfolio</Link>
+                <Link href="/" className="flex items-center gap-2">
+                  <Image src="/logo.png" alt="Chatfolio Logo" width={20} height={20} />
+                  <span>Chatfolio</span>
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
             <NavigationMenuItem>
