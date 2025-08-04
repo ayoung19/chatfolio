@@ -224,19 +224,21 @@ export function PortfolioPage({ slug }: Props) {
                     size="sm"
                     onClick={() => clipboard.copy(portfolioUrl)}
                   >
-                    <div className="flex w-full items-center justify-between">
-                      <p className="text-xs">{clipboard.copied ? "Copied!" : portfolioUrl}</p>
-                      <Copy size="0.5rem" />
+                    <div className="flex w-full items-center justify-between gap-2">
+                      <p className="truncate text-xs">
+                        {clipboard.copied ? "Copied!" : portfolioUrl}
+                      </p>
+                      <Copy className="flex-shrink-0" size="0.5rem" />
                     </div>
                   </Button>
-                  <Separator orientation="vertical" className="mx-2 h-4" />
+                  <Separator orientation="vertical" className="ml-2 h-4" />
                 </>
               )}
               {user && (
                 <>
                   <DropdownMenu>
                     <DropdownMenuTrigger>
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="ml-2 h-8 w-8">
                         <AvatarFallback>{user.email[0].toUpperCase()}</AvatarFallback>
                       </Avatar>
                     </DropdownMenuTrigger>

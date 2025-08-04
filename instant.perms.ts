@@ -7,8 +7,7 @@ const rules = {
   $files: {
     allow: {
       view: "true",
-      // TODO: Fix.
-      create: "true",
+      create: "isOwner",
       update: "isOwner",
       delete: "isOwner",
     },
