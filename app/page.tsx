@@ -17,5 +17,5 @@ export default async function Home() {
     },
   });
 
-  return <PortfolioPage slug={portfoliosQuery.portfolios[0].slug as string} />;
+  return <PortfolioPage slug={portfoliosQuery.portfolios[0].slug} />;
 }

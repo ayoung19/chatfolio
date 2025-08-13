@@ -13,11 +13,10 @@ import { Markdown } from "./Markdown";
 
 interface Props {
   portfolio: InstaQLEntity<AppSchema, "portfolios">;
-  contexts: InstaQLEntity<AppSchema, "contexts">[];
   openSignInModal: () => void;
 }
 
-export function Chat({ portfolio, contexts, openSignInModal }: Props) {
+export function Chat({ portfolio, openSignInModal }: Props) {
   const { user } = db.useAuth();
 
   const { ref, inViewport } = useInViewport();
@@ -25,8 +24,7 @@ export function Chat({ portfolio, contexts, openSignInModal }: Props) {
 
   const { messages, input, append, handleInputChange, handleSubmit } = useChat({
     body: {
-      portfolio,
-      contexts,
+      portfolioId: portfolio.id,
     },
   });
 

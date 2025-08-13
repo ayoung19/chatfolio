@@ -424,11 +424,7 @@ export function PortfolioPage({ slug }: Props) {
           </Card>
         </div>
         <div className="col-span-12 flex min-h-0 flex-1 flex-col pb-8 lg:col-span-7 xl:col-span-8">
-          <Chat
-            portfolio={portfolio}
-            contexts={portfolio.contexts}
-            openSignInModal={() => setModalId("sign-in")}
-          />
+          <Chat portfolio={portfolio} openSignInModal={() => setModalId("sign-in")} />
         </div>
       </div>
     </div>

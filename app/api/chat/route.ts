@@ -1,3 +1,4 @@
+import { db } from "@/lib/db/admin";
 import { createOpenAI } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { z } from "zod";
@@ -7,21 +8,35 @@ export const maxDuration = 30;
 
 const schema = z.object({
   messages: z.any(),
-  portfolio: z.object({
-    slug: z.string(),
-    name: z.string(),
-    about: z.string(),
-  }),
-  contexts: z.array(
-    z.object({
-      name: z.string(),
-      value: z.string(),
-    }),
-  ),
+  portfolioId: z.string(),
 });
 
 export async function POST(req: Request) {
-  const { messages, portfolio, contexts } = schema.parse(await req.json());
+  const { messages, portfolioId } = schema.parse(await req.json());
+
+  const [portfoliosQuery, resumeQuery] = await Promise.all([
+    db.query({
+      portfolios: {
+        $: {
+          where: {
+            id: portfolioId,
+          },
+        },
+        contexts: {},
+      },
+    }),
+    db.query({
+      $files: {
+        $: {
+          where: {
+            path: `${portfolioId}/resume.pdf`,
+          },
+        },
+      },
+    }),
+  ]);
+
+  const portfolio = portfoliosQuery.portfolios[0];
 
   const openai = createOpenAI({
     apiKey: process.env.OPEN_AI_API_KEY,
@@ -32,8 +47,11 @@ You are an interactive portfolio. Your job is to teach people about the portfoli
 You have the following data about the portfolio owner:
 - Name: ${portfolio.name}
 - About: ${portfolio.about}
+- LinkedIn URL: ${portfolio.linkedin || "Not Provided"}
+- Github URL: ${portfolio.github || "Not Provided"}
+- Resume URL: ${resumeQuery.$files[0].url}
 - Context items:
-${contexts.map((c) => `  • ${c.name}: ${c.value}`).join("\n")}
+${portfolio.contexts.map((c) => `  • ${c.name}: ${c.value}`).join("\n")}
 
 IMPORTANT: If the portfolio contains minimal information, spam content, or lacks meaningful context about the person's background, skills, or accomplishments, respond briefly with: "The portfolio owner hasn't provided enough information to share meaningful insights about their background and accomplishments. Please ask them to add more details to their portfolio."
 
